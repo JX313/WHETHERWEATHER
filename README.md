@@ -9,6 +9,15 @@ A Python-based weather application which runs on the python-weather module.
 5. mysql-connector
 6. os
 
+# FEATURES
+1. Accurate weather information (not currently)
+2. Material You Design (hope to implement Cupertino design)
+3. MySQL data management
+
 I created this program as part of my grade 12 computer science project. I hope to make improvements on the way as I am currently just a beginner in Python.
 
 I hope you enjoy the program! Please do suggest some valuable tips!
+
+UPDATE: I'll be uploading the code soon as the project is approaching completion! Stay tuned!
+
+
