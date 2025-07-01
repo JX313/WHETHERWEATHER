@@ -1,7 +1,7 @@
 # WHETHERWEATHER! 🌦️🌡️
 A Python-based weather application which runs on the python-weather module.
 
-#MODULES USED
+# MODULES USED
 1. flet
 2. python-weather
 3. asyncio
