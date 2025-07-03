@@ -19,3 +19,6 @@ I created this program as part of my grade 12 computer science project. I hope t
 I hope you enjoy the program! Please do suggest some valuable tips!
 
 **<ins>(UPDATE: I'll be uploading the code soon as the project is approaching completion! Stay tuned!)</ins>**
+
+### SPECIAL THANKS:
+@[Coder-X15](https://github.com/Coder-X15) (my brother)
