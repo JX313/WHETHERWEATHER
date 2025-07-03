@@ -1,0 +1,39 @@
+ERROR THAT NEEDS HANDLING:
+Situation: when weather is being fetched, user interrupts fetching by clicking back button or searches another city during fetching, or user clicks 'Search' twice
+
+
+
+Future exception was never retrieved
+future: <Future finished exception=<RequestError status=404>>
+Traceback (most recent call last):
+  File "C:\Users\Hello\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\Hello\AppData\Local\Programs\Python\Python313\Lib\site-packages\flet\core\page.py", line 906, in wrapper
+    handler(*args)
+    ~~~~~~~^^^^^^^
+  File "C:\Users\Hello\Downloads\whetherweatherbasedonflet 1.py", line 283, in navig
+    page.add(fetched_new_weather())
+             ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Hello\Downloads\whetherweatherbasedonflet 1.py", line 156, in fetched_new_weather
+    get_weather(city)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\Hello\Downloads\whetherweatherbasedonflet 1.py", line 104, in get_weather
+    globalargs, weathertoday, forecast=process_weather(city.value)
+                                       ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\Hello\Downloads\whetherweatherbasedonflet 1.py", line 91, in process_weather
+    output = asyncio.run(get_weather_api_result(place))
+  File "C:\Users\Hello\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "C:\Users\Hello\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\Hello\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 720, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "C:\Users\Hello\Downloads\whetherweatherbasedonflet 1.py", line 45, in get_weather_api_result
+    weather = await client.get(place)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Hello\AppData\Local\Programs\Python\Python313\Lib\site-packages\python_weather\client.py", line 132, in get
+    raise RequestError(status) from None
+python_weather.errors.RequestError
