@@ -107,29 +107,48 @@ def get_weather(city):
         three_days.append(value)
         
 '''defining different weather kinds'''
-'''
+
 def kinda_weather():
     kind_of_weather=weathertoday['kind']
     if kind_of_weather == 'Clear':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\clear.png")
     elif kind_of_weather == 'Sunny':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\sunny.png")
     elif kind_of_weather == 'Partly Cloudy':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\partly cloudy.png")
     elif kind_of_weather == 'Cloudy':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\cloudy.png")
     elif kind_of_weather == 'Very Cloudy':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\very cloudy.png")
     elif kind_of_weather == 'Fog':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\fog.png")
     elif kind_of_weather == 'Light Showers':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\light showers.png")
     elif kind_of_weather == 'Light Sleet Showers':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\sleet or sleet showers.png")
     elif kind_of_weather == 'Light Sleet':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\sleet or sleet showers.png")
     elif kind_of_weather == 'Thundery Showers':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\thundery showers.png")
     elif kind_of_weather == 'Light Snow':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\light snow.png")
     elif kind_of_weather == 'Heavy Snow':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\snow.png")
     elif kind_of_weather == 'Light Rain':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\light showers.png")
     elif kind_of_weather == 'Heavy Showers':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\heavy showers.png")
     elif kind_of_weather == 'Heavy Rain':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\heavy rain.png")
     elif kind_of_weather == 'Light Snow Showers':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\light snow.png")
     elif kind_of_weather == 'Heavy Snow Showers':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\light snow.png")
     elif kind_of_weather == 'Thundery Heavy Rain':
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\thundery rain.png")
     elif kind_of_weather == 'Thundery Snow Showers':
-'''
+        ft.Image(src="C:\Users\SYSTEM12\Downloads\thundery showers.png")
+
 
 #reference links: 
 #https://www.blackbox.ai/chat/tMR0XWR
