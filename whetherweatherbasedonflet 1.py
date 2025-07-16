@@ -1,4 +1,5 @@
 import flet as ft
+import base64
 #import mysql.connector as mysql
 import python_weather
 import datetime
@@ -109,45 +110,57 @@ def get_weather(city):
 '''defining different weather kinds'''
 
 def kinda_weather():
+    image=None
     kind_of_weather=weathertoday['kind']
     if kind_of_weather == 'Clear':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\clear.png")
+        image=r"C:/Users/SYSTEM12/Downloads/clear.png"
     elif kind_of_weather == 'Sunny':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\sunny.png")
+        image=r"C:/Users/SYSTEM12/Downloads/sunny.png"
     elif kind_of_weather == 'Partly Cloudy':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\partly cloudy.png")
+        image=r"C:/Users/SYSTEM12/Downloads/partly cloudy.png"
     elif kind_of_weather == 'Cloudy':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\cloudy.png")
+        image=r"C:/Users/SYSTEM12/Downloads/cloudy.png"
     elif kind_of_weather == 'Very Cloudy':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\very cloudy.png")
+        image=r"C:/Users/SYSTEM12/Downloads/very cloudy.png"
     elif kind_of_weather == 'Fog':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\fog.png")
+        image=r"C:/Users/SYSTEM12/Downloads/fog.png"
     elif kind_of_weather == 'Light Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\light showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/light showers.png"
     elif kind_of_weather == 'Light Sleet Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\sleet or sleet showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/sleet or sleet showers.png"
     elif kind_of_weather == 'Light Sleet':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\sleet or sleet showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/sleet or sleet showers.png"
     elif kind_of_weather == 'Thundery Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\thundery showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/thundery showers.png"
     elif kind_of_weather == 'Light Snow':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\light snow.png")
+        image=r"C:/Users/SYSTEM12/Downloads/light snow.png"
     elif kind_of_weather == 'Heavy Snow':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\snow.png")
+        image=r"C:/Users/SYSTEM12/Downloads/snow.png"
     elif kind_of_weather == 'Light Rain':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\light showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/light showers.png"
     elif kind_of_weather == 'Heavy Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\heavy showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/heavy showers.png"
     elif kind_of_weather == 'Heavy Rain':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\heavy rain.png")
+        image=r"C:/Users/SYSTEM12/Downloads/heavy rain.png"
     elif kind_of_weather == 'Light Snow Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\light snow.png")
+        image=r"C:/Users/SYSTEM12/Downloads/light snow.png"
     elif kind_of_weather == 'Heavy Snow Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\light snow.png")
+        image=r"C:/Users/SYSTEM12/Downloads/light snow.png"
     elif kind_of_weather == 'Thundery Heavy Rain':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\thundery rain.png")
+        image=r"C:/Users/SYSTEM12/Downloads/thundery rain.png"
     elif kind_of_weather == 'Thundery Snow Showers':
-        ft.Image(src="C:\Users\SYSTEM12\Downloads\thundery showers.png")
+        image=r"C:/Users/SYSTEM12/Downloads/thundery showers.png"
+    return image
+
+def encodeImage():
+    img=kinda_weather()
+    if img is None or not os.path.exists(img):
+        print(f"Error: Image path is invalid or None: {img}")
+        return ""
+    with open(img, 'rb') as img:
+        img_encoded=base64.b64encode(img.read()).decode("utf-8")
+
+    return img_encoded
 
 
 #reference links: 
@@ -207,6 +220,7 @@ def main(page:ft.Page):
                 ft.Text("Date: {}".format(globalargs['date'])),
                 ft.Text("Description: {}".format(weathertoday['description'])),
                 ft.Text("Temperature: {}℃".format(weathertoday['temperature'])),
+                ft.Image(src_base64=encodeImage()),
                 ft.Button("Save today's weather...")
                 ]),
                 width=350,
