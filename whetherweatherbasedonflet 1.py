@@ -1,6 +1,6 @@
 import flet as ft
 import base64
-#import mysql.connector as mysql
+import mysql.connector as mysql
 import python_weather
 import datetime
 import asyncio
@@ -11,11 +11,11 @@ globalargs, weathertoday, forecast=None, None, None
 three_dates=[]
 three_days=[]
 
-#backend kinda shi feelin highkey
+## --------------------- BACKEND FUNCTIONS ---------------------- ##
 '''mysql'''
-#conn=mysql.connect(host="localhost", user="root", password="1234", database="whetherweather")
-#cur=conn.cursor()
-'''
+conn=mysql.connect(host="localhost", user="root", password="1234", database="whetherweather")
+cur=conn.cursor()
+
 def create_new_table(city):
     cur.execute('create table if not exists %s(' \
     'searched_location varchar(30),' \
@@ -31,10 +31,28 @@ def save_to_table(info):
     cur.execute('insert into %s values(%s, %s, %s, %s, %s, %s, %s);'%(info))
     cur.commit()
 
-def remove_from_database(city):
-    cur.execute('drop table %s'%(city,))
+def display_tables():
+    control=[]
+    cur.execute('show tables')
+    retrieved_tables=cur.fetchall()
+    for record in retrieved_tables:
+        city_name=record[0]
+        control.append(ft.Text(city_name))
+    return control
+
+
+def remove_table(searching_city):
+    cur.execute('drop table %s'%(searching_city.value,))
     cur.commit()
-'''
+
+def delete_all_data():
+    cur.execute('show tables')
+    tables=cur.fetchall()
+    for (table,) in tables:
+        cur.execute(f"drop table '{table}'")
+    cur.commit()
+
+
 
 '''python-weather'''
 async def get_weather_api_result(place: str) -> None:
@@ -86,7 +104,7 @@ def get_forecasts(weather: python_weather.forecast.Forecast) -> dict:
     forecasts = dict(list(forecasts.items())[1:])
     return forecasts
 
-## --------------------- MAIN FUNCTION ---------------------- ##
+## --------------------- MAIN FUNCTIONS ---------------------- ##
 
 def process_weather(place: str) -> list:
     output = asyncio.run(get_weather_api_result(place))
@@ -110,48 +128,49 @@ def get_weather(city):
 '''defining different weather kinds'''
 
 def kinda_weather():
-    image=None
+    image=""
     kind_of_weather=weathertoday['kind']
     if kind_of_weather == 'Clear':
-        image=r"C:/Users/SYSTEM12/Downloads/clear.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ER5ywBR_1TVEhT48KmYe1zwB6TOaTvqR6G2pE0uYOKpw0g?e=YJMXdm"
     elif kind_of_weather == 'Sunny':
-        image=r"C:/Users/SYSTEM12/Downloads/sunny.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/Ec5mzmSquHxJvJDS55Y-IPMBgtoX7vwaYkylVIqfDaGQpA?e=H6HvZz"
     elif kind_of_weather == 'Partly Cloudy':
-        image=r"C:/Users/SYSTEM12/Downloads/partly cloudy.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ER2tYpoZRvZPlfJ6r6yJMAwBlmQ7tFg-u6F_49nZUjckvw?e=TZVmHh"
     elif kind_of_weather == 'Cloudy':
-        image=r"C:/Users/SYSTEM12/Downloads/cloudy.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/Eb9IyoAPy0FOpQ_gIQUkZ7IBj085d6BQS85nWfrtXKN0ew?e=eZeNKf"
     elif kind_of_weather == 'Very Cloudy':
-        image=r"C:/Users/SYSTEM12/Downloads/very cloudy.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EX9L0wDrrHFJsLjoAIcJ-l4BXGAg3TpXdc5ALP_8HGdQwQ?e=kwgcbG"
     elif kind_of_weather == 'Fog':
-        image=r"C:/Users/SYSTEM12/Downloads/fog.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EV_Q1ytxHdNNqJVyW0i32KwB1VEbVBJqDRU0Jz5yzW9Ilw?e=bLBPiG"
     elif kind_of_weather == 'Light Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/light showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EZbusNr9mQpCgonqZEkcpNABueEPnY8t5hkAgMI89sNg9A?e=39Aijz"
     elif kind_of_weather == 'Light Sleet Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/sleet or sleet showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ERGBP9m9imNMioUo-2h6fbIBKfBTStJjS3zLSPtooAb6hw?e=661FZa"
     elif kind_of_weather == 'Light Sleet':
-        image=r"C:/Users/SYSTEM12/Downloads/sleet or sleet showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ERGBP9m9imNMioUo-2h6fbIBKfBTStJjS3zLSPtooAb6hw?e=661FZa"
     elif kind_of_weather == 'Thundery Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/thundery showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/Ee3Ge5-hTuVNlVR0QwDAQ7wBBEV4joxmiSrvJpRahZkUJA?e=AOW9d4"
     elif kind_of_weather == 'Light Snow':
-        image=r"C:/Users/SYSTEM12/Downloads/light snow.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ESuq7-9SfAFLrHFu1AwpDRIBS4bdKd53PPABG-jrdKY_bg?e=O4KnsY"
     elif kind_of_weather == 'Heavy Snow':
-        image=r"C:/Users/SYSTEM12/Downloads/snow.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EfevGoyDwLRBpasL9wWMzAsBu8yVTD9etWNFShjSGQkTYw?e=6b61zg"
     elif kind_of_weather == 'Light Rain':
-        image=r"C:/Users/SYSTEM12/Downloads/light showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EZbusNr9mQpCgonqZEkcpNABueEPnY8t5hkAgMI89sNg9A?e=39Aijz"
     elif kind_of_weather == 'Heavy Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/heavy showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EUWJI7VsRRpNgJRJUaCEnjEB-tAlGzlFTF5ZSCb7oUw28Q?e=8FojPe"
     elif kind_of_weather == 'Heavy Rain':
-        image=r"C:/Users/SYSTEM12/Downloads/heavy rain.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ESmPbIOXBudPm80pziSICOYBsCua_Xl__VOtVhFb91v10w?e=b7MvMb"
     elif kind_of_weather == 'Light Snow Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/light snow.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/ESuq7-9SfAFLrHFu1AwpDRIBS4bdKd53PPABG-jrdKY_bg?e=O4KnsY"
     elif kind_of_weather == 'Heavy Snow Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/light snow.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EfevGoyDwLRBpasL9wWMzAsBu8yVTD9etWNFShjSGQkTYw?e=6b61zg"
     elif kind_of_weather == 'Thundery Heavy Rain':
-        image=r"C:/Users/SYSTEM12/Downloads/thundery rain.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/Ee3Ge5-hTuVNlVR0QwDAQ7wBBEV4joxmiSrvJpRahZkUJA?e=krSoQF"
     elif kind_of_weather == 'Thundery Snow Showers':
-        image=r"C:/Users/SYSTEM12/Downloads/thundery showers.png"
+        image="https://1drv.ms/i/c/2b4cf875021e3a16/EWnjnRfW8ppNoEpVe-mMBz0BQErnf5xHZmSTcoqh3V_-dg?e=1s5JfX"
     return image
 
+'''
 def encodeImage():
     img=kinda_weather()
     if img is None or not os.path.exists(img):
@@ -161,6 +180,7 @@ def encodeImage():
         img_encoded=base64.b64encode(img.read()).decode("utf-8")
 
     return img_encoded
+'''
 
 
 #reference links: 
@@ -193,8 +213,8 @@ def main(page:ft.Page):
     def home_page():
         return ft.Column(controls=
                          [ft.Text("Welcome to WHETHERWEATHER!", size=30),
-                          ft.Button(text="Search for weather in a city...", on_click= lambda e: page.go("/fetchweather")),
-                          ft.Button(text="Search for saved weather...", on_click=lambda e: page.go("/saved")),
+                          ft.Button(text="Search for weather in a city", on_click= lambda e: page.go("/fetchweather")),
+                          ft.Button(text="View & manage saved weather", on_click= lambda e: page.go("/managedata")),
                           ft.Button(text="About this app...", on_click= lambda e: page.go("/about")),
                           ft.Button(text="Quit app")],
                           alignment=ft.MainAxisAlignment.CENTER,
@@ -215,12 +235,13 @@ def main(page:ft.Page):
     def fetched_new_weather():
         if city!='':
             get_weather(city)
+            weather_kind=kinda_weather()
             column1=ft.Container(ft.Column(controls=[
                 ft.Text("Today's forecast:", size=22, text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE),
                 ft.Text("Date: {}".format(globalargs['date'])),
                 ft.Text("Description: {}".format(weathertoday['description'])),
                 ft.Text("Temperature: {}℃".format(weathertoday['temperature'])),
-                ft.Image(src_base64=encodeImage()),
+                ft.Image(src=weather_kind),
                 ft.Button("Save today's weather...")
                 ]),
                 width=350,
@@ -275,31 +296,27 @@ def main(page:ft.Page):
                               horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                               expand=True)
 
-
-    def saved_weather():
-        global search_city, search_ccode
-        search_city=ft.TextField(label="Enter the city name", width=500)
-        search_ccode=ft.TextField(label="Enter country code", width=500)
-        return ft.Column(controls=
-                         [ft.Text("Look up weather data that you saved.", size=25),
-                          ft.Text("Back by MySQL™. Simple. Secure. Safe.", size=15),
-                          search_city,
-                          search_ccode,
-                          ft.Button("Search", on_click= lambda e: page.go("/saved/fetchedsavedweather")),
-                          ft.Button("Back", on_click= lambda e: page.go("/"))],
-                          alignment=ft.MainAxisAlignment.CENTER,
-                          horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                          expand=True)
-    def fetched_saved_weather():
-        if search_city !="" and search_ccode!="":
-            return ft.Column(controls=[
-                ft.Text("Here's a history of the city's weather:", size=30), 
-                ft.Button("Back", on_click= lambda e: page.go("/")),
-                ft.Button("Save today's weather..."),
-                ft.IconButton(icon=ft.Icons.HOUSE_OUTLINED, on_click= lambda e:page.go("/"))],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                expand=True)
+    
+    def manage_saved_weather():
+        global searching_city
+        searching_city=ft.TextField(label="Enter a valid city name from the database to perform an action")
+        row1=ft.Row(controls=[
+            ft.Button("Delete city's saved history"),
+            searching_city,
+            ft.Button("View city's saved history")],
+            alignment=ft.MainAxisAlignment.CENTER
+            )
+        return ft.Column(controls=[
+            ft.Text("View and manage your previously saved weather info here.", size=25),
+            ft.Text("Backed by MySQL™. Simple. Secure. Safe.", size=15),
+            ft.Container(ft.Text("")),
+            row1,
+            ft.Button("Delete all saved data..."),
+            ft.Button("Back", on_click=lambda e: page.go("/"))],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            expand=True
+            )
         
     def about_this_app():
         return ft.Column(controls=
@@ -345,10 +362,8 @@ def main(page:ft.Page):
             page.add(new_weather())
         elif page.route == "/fetchweather/weather":
             page.add(fetched_new_weather())
-        elif page.route == "/saved":
-            page.add(saved_weather())
-        elif page.route == "/saved/fetchedsavedweather":
-            page.add(fetched_saved_weather())
+        elif page.route == "/managedata":
+            page.add(manage_saved_weather())
         elif page.route == "/about":
             page.add(about_this_app())
 
