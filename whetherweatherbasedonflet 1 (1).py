@@ -15,7 +15,7 @@ three_days=[]
 '''mysql'''
 def get_connection():
     try:
-        conn = mysql.connect(host="localhost", user="root", password="1234", database="whetherweather")
+        conn = mysql.connect(host="localhost", user="root", password="1t@d0riYuji", database="whetherweather")
         return conn
     except mysql.Error as er:
         print("Connection failed:", er)
@@ -27,20 +27,24 @@ def save_to_table(city, data):
     conn=get_connection()
     if conn:
         cur=conn.cursor()
+        section = 'create'
         try:
             cur.execute(f"""
-            create table if not exists `{city_name}`(
+            create table if not exists {city_name}(
+            search_date date,
+            search_time time,
             searched_location varchar(30),
             fetched_location varchar(30),
             latitude decimal(4,2),
-            longitude decimal(9,6),
+            longitude decimal(4,2),
             temperature_in_celsius int,
             temperature_in_fahrenheit int,
-            description varchar(30));
-            ")
+            description varchar(30)
+            );
             """)
 ### ADD LOADING INDICATOR FOR SEARCH
-            cur.execute(f"insert into `{city_name}` values (%s, %s, %s, %s, %s, %s, %s)",(city_name, *data))
+            section = 'insert'
+            cur.execute("insert into %s values ('%s', '%s', '%s', '%s', %f, %f, %d, %d, '%s');"%(city_name, *data))
             conn.commit()
             message="Saved successfully!"
             with open('runtime_logs.txt', 'a') as f_log:
@@ -48,7 +52,7 @@ def save_to_table(city, data):
                 f_log.write("\n")
                 f_log.flush()
         except mysql.Error as err:
-            message="Save failed!"
+            message=f"Save failed at {section} stage!"
             with open('runtime_logs.txt', 'a') as f_log:
                 f_log.write(message)
                 f_log.write(str(err))
@@ -160,7 +164,8 @@ def extract_global_args(weather: python_weather.forecast.Forecast) -> dict:
         'region':weather.region, # region of forecast
         'country': weather.country, # the country where the location is present
         'location':weather.location,# the location of forecast
-        'date': weather.datetime.strftime("%Y-%m-%d") # date of query in YYYY-DD-MM format
+        'date': weather.datetime.strftime("%Y-%m-%d"), # date of query in YYYY-DD-MM format
+        'time': weather.datetime.strftime("%H:%M:%S") # time of query in HH:MM:SS format
         }
     return globalarg
 
@@ -310,7 +315,7 @@ def main(page:ft.Page):
                           ft.Button(text="Search for weather in a city", on_click= lambda e: page.go("/fetchweather")),
                           ft.Button(text="View & manage saved weather", on_click= lambda e: page.go("/managedata")),
                           ft.Button(text="About this app...", on_click= lambda e: page.go("/about")),
-                          ft.Button(text="Quit app", on_click=lambda e:page.window_close())],
+                          ft.Button(text="Quit app", on_click=lambda e:page.window.close())],
                           alignment=ft.MainAxisAlignment.CENTER,
                           horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                           expand=True)
@@ -334,7 +339,7 @@ def main(page:ft.Page):
             temp_fahr_today= c_to_f(temp_cels_today)
             lat=float(globalargs['coords'][0])
             lon=float(globalargs['coords'][1])
-            data=(fetched_loc, lat, lon, temp_cels_today, temp_fahr_today, desc_today)
+            data=(globalargs['date'], globalargs['time'], searched_loc, fetched_loc, lat, lon, temp_cels_today, temp_fahr_today, desc_today)
             column1=ft.Container(ft.Column(controls=[
                 ft.Text("Today's forecast:", size=22, text_align=ft.TextAlign.CENTER, color=ft.Colors.WHITE),
                 ft.Text(f"Date: `{globalargs['date']}`"),
@@ -393,26 +398,65 @@ def main(page:ft.Page):
                               expand=True)
 
     
+
     def manage_saved_weather():
         global searching_city
-        searching_city=ft.TextField(label="Enter a valid city name from the database to perform an action")
-        row1=ft.Row(controls=[
-            ft.Button("Delete city's saved history", on_click = lambda e: remove_table(searching_city)),
-            searching_city,
-            ft.Button("View city's saved history", on_click = lambda e: show_history(searching_city))],
+        searching_city = ft.TextField(label="Enter a valid city name from the database to perform an action")
+        # Get list of tables (cities)
+        tables_controls = display_tables() or []
+        tables_list = ft.Column(controls=[ft.Text("Saved cities in database:", size=18)] + tables_controls, alignment=ft.MainAxisAlignment.START)
+        row1 = ft.Row(
+            controls=[
+                ft.Button("Delete city's saved history", on_click=lambda e: remove_table(searching_city)),
+                searching_city,
+                ft.Button("View city's saved history", on_click=lambda e: page.go(f"/managedata/{searching_city.value}"))
+            ],
             alignment=ft.MainAxisAlignment.CENTER
-            )
+        )
         return ft.Column(controls=[
             ft.Text("View and manage your previously saved weather info here.", size=25),
             ft.Text("Backed by MySQL™. Simple. Secure. Safe.", size=15),
-            ft.Container(ft.Text("")),
+            ft.Container(
+                content = tables_list,
+                width=450,
+                alignment=ft.alignment.center,
+                bgcolor=ft.Colors.BLUE_GREY_600,
+                opacity=0.8,
+                padding=20,
+                border_radius=10
+            ),
             row1,
-            ft.Button("Delete all saved data..."),
-            ft.Button("Back", on_click=lambda e: page.go("/"))],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            expand=True
-            )
+            ft.Button("Delete all saved data...", on_click= lambda e: delete_all_data()),
+            ft.Button("Back", on_click=lambda e: page.go("/"))
+        ], alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        expand=True)
+
+    def show_city_history_page(city_name):
+        # Fetch data from the table and render it
+        conn = get_connection()
+        controls = []
+        if conn:
+            cur = conn.cursor()
+            try:
+                cur.execute(f"SELECT * FROM `{city_name}`;")
+                rows = cur.fetchall() or []
+                columns = [desc[0] for desc in (cur.description or [])]
+                controls.append(ft.Text(f"History for city: {city_name}", size=25))
+                if columns and rows:
+                    # Build DataTable columns
+                    dt_columns = [ft.DataColumn(ft.Text(col)) for col in columns]
+                    # Build DataTable rows
+                    dt_rows = [ft.DataRow(cells=[ft.DataCell(ft.Text(str(cell))) for cell in row]) for row in rows]
+                    controls.append(ft.DataTable(columns=dt_columns, rows=dt_rows))
+                elif columns and not rows:
+                    controls.append(ft.Text("No data found for this city.", color=ft.Colors.YELLOW))
+            except mysql.Error as err:
+                controls.append(ft.Text(f"Error fetching data: {err}", color=ft.Colors.RED))
+        else:
+            controls.append(ft.Text("Database connection failed.", color=ft.Colors.RED))
+        controls.append(ft.Button("Back", on_click=lambda e: page.go("/managedata")))
+        return ft.Column(controls=controls, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, expand=True)
         
     def about_this_app():
         return ft.Column(controls=
@@ -458,6 +502,10 @@ def main(page:ft.Page):
             page.add(new_weather())
         elif page.route == "/fetchweather/weather":
             page.add(fetched_new_weather())
+        elif page.route.startswith("/managedata/"):
+            # Extract city name from route
+            city_name = page.route.split("/managedata/")[1]
+            page.add(show_city_history_page(city_name))
         elif page.route == "/managedata":
             page.add(manage_saved_weather())
         elif page.route == "/about":
