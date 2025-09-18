@@ -1,5 +1,7 @@
 import flet as ft
+# NB: make sure to only have mysql-connector-python in your Python site packages, otherwise conflicts shall arise
 import mysql.connector as mysql
+
 import python_weather
 from datetime import datetime
 import asyncio
@@ -9,15 +11,23 @@ import os
 globalargs, weathertoday, forecast=None, None, None
 three_dates=[]
 three_days=[]
+PASSWORD = "1t@d0riYuji"
 
 ## --------------------- MySQL FUNCTIONS ---------------------- ##
 '''mysql'''
 def get_connection():
     try:
-        conn = mysql.connect(host="localhost", user="root", password="1234", database="whetherweather")
+        conn = mysql.connect(host="localhost", 
+                             user="root", 
+                             password= PASSWORD, 
+                             database="whetherweather", 
+                             auth_plugin='mysql_native_password')
         return conn
-    except mysql.Error as er:
-        print("Connection failed:", er)
+    except Exception as er:
+        with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(f"Connection failed: {er}\n")
+                f_log.flush()
+        print(f"Connection failed: {er}")
         return None
 
 
@@ -34,15 +44,15 @@ def save_to_table(city, data):
             Time time,
             Search_loc varchar(30),
             Fetched_loc varchar(30),
-            Latitude decimal(4,2),
-            Longitude decimal(4,2),
+            Latitude decimal(6,2),
+            Longitude decimal(6,2),
             Celc_temp int,
             Fahrein_temp int,
             Description varchar(30)
             );
             """)
             section = 'insert'
-            cur.execute("insert into %s values ('%s', '%s', '%s', '%s', %f, %f, %d, %d, '%s');"%(city_name, *data))
+            cur.execute("insert into %s values ('%s', '%s', '%s', '%s', %.2f, %.2f, %d, %d, '%s');"%(city_name, *data))
             conn.commit()
             message="Saved successfully!"
             with open('runtime_logs.txt', 'a') as f_log:
