@@ -56,11 +56,13 @@ def save_to_table(city, data):
             conn.commit()
             message="Saved successfully!"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write("\n")
                 f_log.flush()
         except mysql.Error as err:
             message=f"Save failed at {section} stage!"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write(str(err))
                 f_log.write("\n")
                 f_log.flush()
@@ -75,11 +77,13 @@ def show_history(searching_city):
             cur.execute("select * from `{}`".format(table_name))
             message="Accessed successfully!"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write("\n")
                 f_log.flush()
         except mysql.Error as err:
             message="Access failed!"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write(str(err))
                 f_log.write("\n")
                 f_log.flush()
@@ -107,11 +111,13 @@ def remove_table(searching_city):
             conn.commit()
             message="Removed successfully!"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write("\n")
                 f_log.flush()
         except mysql.Error as err:
             message="Couldn't remove data, try again later"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write(str(err))
                 f_log.write("\n")
                 f_log.flush()
@@ -130,11 +136,13 @@ def delete_all_data():
             conn.commit()
             message="History cleared!"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write("\n")
                 f_log.flush()
         except mysql.Error as err:
             message="Couldn't clear history, try again later"
             with open('runtime_logs.txt', 'a') as f_log:
+                f_log.write(message)
                 f_log.write(str(err))
                 f_log.write("\n")
                 f_log.flush()
@@ -703,3 +711,4 @@ def main(page:ft.Page):
 ## --------------------- RUN APPLICATION ---------------------- ##
 if __name__ == "__main__":
     ft.app(target=main)
+
