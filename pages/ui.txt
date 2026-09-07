@@ -1,0 +1,121 @@
+import flet as ft
+import asyncio
+from state import state
+
+def main(page:ft.Page):
+    #----------page orientation + setup----------#
+    page.vertical_alignment=ft.CrossAxisAlignment.CENTER
+    page.horizontal_alignment=ft.CrossAxisAlignment.CENTER
+    page.theme_mode=ft.ThemeMode.DARK
+
+    #----------page definitions----------#
+    '''__________HOME PAGE__________'''
+    def home_page():
+        return ft.Column(columns=
+                         [
+                             ft.Text("Welcome to WHETHERWEATHER!", size=30),
+                             ft.Button("Search for weather in a city", on_click=lambda e:page.go("/fetchweather")),
+                             ft.Button("View and manage saved weather history", on_click=lambda e:page.go("/managedata")),
+                             ft.Button("About this app...", on_click=lambda e:page.go("/aboutapp")),
+                             ft.Button("Quit app", on_click=lambda e:page.window.close())
+                         ],
+                         alignment=ft.MainAxisAlignment.CENTER,
+                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                         expand=True
+                         )
+    
+    '''__________SEARCH NEW WEATHER PAGE__________'''
+    def new_weather():
+        state.city=ft.TextField(label="Enter the city name", width=500)
+        def on_search(e): 
+                    page.controls.clear() 
+                    page.add(loading_page(text="Fetching weather...")) 
+                    page.update() 
+                    async def do_search(): 
+                        await asyncio.sleep(2) 
+                        page.push_route("/fetchweather/weather") 
+                    page.run_task(do_search) 
+        return ft.Column(controls=[ 
+                ft.Text("Search for a city's weather", size=25), 
+                ft.Text("(Enter the place name in title case. Specify the state)"), 
+                state.city, 
+                ft.Button("Search", on_click=on_search), 
+                ft.Button("Back", on_click=lambda e: page.push_route("/")) 
+                ], 
+            alignment=ft.MainAxisAlignment.CENTER, 
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
+            expand=True)
+
+    
+    '''__________LOOK UP SAVED WEATHER DATA PAGE__________'''
+    def saved_weather():
+        search_city=ft.TextField(label="Enter a valid city name from the above database to perform an action...")
+        return ft.Column(controls=
+                         [
+                             ft.Text("View and manage your previously saved weather info here.", size=25), 
+                             ft.Text("Backed by MySQL™. Simple. Secure. Safe.", size=15),
+                             ft.Button("Delete all saved data"),
+                             ft.Button("Back", on_click=lambda e:page.go("/"))
+                         ],
+                         alignment=ft.MainAxisAlignment.CENTER,
+                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                         expand=True
+                         )
+    
+    '''__________ABOUT THIS APPLICATION PAGE__________'''
+    def about_app():
+        about_text=(
+            "    This Python-based application, by the name of 'WHETHERWEATHER!',\n" 
+            "    serves the purpose of retrieving weather data of a place and for storing\n" 
+            "    and reading the weather history at that place whenever you opt to store it.\n" 
+            "    This application runs on the python-weather module, a free and asynchronous weather\n" 
+            "    Python API wrapper, and utilizes the flet module, a Flutter-substituent\n" 
+            "    module for Python, available to Python, to make it user-friendly.\n\n" 
+            "    Copyright © WHETHERWEATHER! 2025; No rights reserved.\n\n" 
+            "    This software is not provided AS IS, IF NOT, WORKING PROPERLY blah blah blah and totally\n" 
+            "    meets your expectations.\n" 
+            "    Make sure to give this program's repo on GitHub a star so that this becomes popular. :)" 
+        )
+
+        return ft.Container(
+            content=ft.Column([
+                ft.Text(about_text,
+                        size=14,
+                        text_align=ft.TextAlign.LEFT,
+                        color=ft.Colors.BLACK87,
+                        selectable=True), 
+                ft.Button("Back", on_click=lambda e: page.go("/")) 
+            ], 
+            alignment=ft.MainAxisAlignment.CENTER, 
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER, 
+            expand=True),
+            alignment=ft.alignment.center,
+            bgcolor=ft.Colors.BLUE_GREY_600,
+            opacity=0.8,
+            padding=30,
+            border_radius=10,
+            expand=True,
+            width=None,
+            height=None
+         )
+    
+    '''__________PAGE NAVIGATION CONTROLS__________'''
+    def navigation(e):
+        page.controls.clear()
+        if page.route=="/":
+            page.add(home_page())
+        elif page.route=="/fetchweather":
+            page.add(new_weather())
+        elif page.route=="/managedata":
+            page.add(saved_weather())
+        elif page.route=="/aboutapp":
+            page.add(about_app())
+
+    page.on_route_change = navigation
+    page.go(page.route or "/")
+
+
+
+'''__________RUN APPLICATION__________'''
+if __name__ == "__main__":
+    ft.app(target=main)
