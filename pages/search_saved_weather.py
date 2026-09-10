@@ -10,7 +10,7 @@ from history_storage import (
 def manage_saved_weather(page:ft.Page):  
     state.searching_city = ft.TextField(label="Enter a valid city name from the database to perform an action") 
     history = read_full_history()
-
+    cities=[]
     if isinstance(history, str):
         tables_controls = []
     else:

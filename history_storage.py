@@ -28,8 +28,7 @@ def read_history(city_name):
         with open('weather_history.json', 'r') as file:
             history = json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
-        message="Nothing in history."
-        return message
+        return []
     
     for data in history:
         if data["searched location"].lower() == city_name.lower():
@@ -42,8 +41,7 @@ def read_full_history():
         with open('weather_history.json', 'r+') as file:
             history = json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
-        message="Nothing in history."
-        return message
+        return []
 
     return history
 
