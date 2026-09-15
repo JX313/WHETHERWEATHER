@@ -7,9 +7,9 @@ from window_settings import show_alert
 from assets import kinda_weather
 from history_storage import save_history
 
-def fetched_new_weather(page:ft.Page): 
-        if state.city != '': 
-            get_weather(state.city) 
+async def fetched_new_weather(page:ft.Page): 
+        if state.city.value != '': 
+            await get_weather(state.city) 
             if isinstance(state.globalargs, dict) and 'error' in state.globalargs: 
                 return ft.Column(controls=[ 
                     ft.Text("Error fetching weather data:", size=22, color=ft.Colors.RED), 
@@ -160,7 +160,7 @@ def saved_successfully_page(page:ft.Page):
             expand=True) 
     
 def return_to_weather(page:ft.Page): 
-        if state.city != '': 
+        if state.city.value != '': 
             weather_kind = kinda_weather() 
             container_width = 350 
             container_height = 220 
