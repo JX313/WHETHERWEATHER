@@ -22,14 +22,14 @@ def main(page:ft.Page):
     page.title=("WHETHERWEATHER!") 
     
     '''__________UNIVERSAL NAVIGATION__________'''
-    def navigation(e):
+    async def navigation(e):
         page.controls.clear()
         if page.route=="/":
             page.add(home_page(page))
         elif page.route=="/fetchweather":
             page.add(new_weather(page))
         elif page.route=="/fetchweather/result":
-            page.add(fetched_new_weather(page))
+            page.add(await fetched_new_weather(page))
         elif page.route=="/fetchweather/weather/view":
             page.add(return_to_weather(page))
         elif page.route=="/fetchweather/saved":
@@ -44,9 +44,9 @@ def main(page:ft.Page):
         page.update()
 
     page.on_route_change = navigation
-    navigation(None)
+    page.run_task(navigation, None) 
 
 
 '''__________RUN APPLICATION__________'''
 if __name__ == "__main__":
-    ft.run(main)
+    ft.app(target=main)

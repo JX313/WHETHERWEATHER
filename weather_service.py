@@ -1,8 +1,8 @@
 import python_weather
 from datetime import datetime
 import asyncio
-import nest_asyncio
-nest_asyncio.apply()
+#import nest_asyncio
+#nest_asyncio.apply()
 import os
 from state import state
 
@@ -60,8 +60,8 @@ def c_to_f(celsius):
     return fahr 
 
 
-def process_weather(place: str) -> list:
-    output = asyncio.run(get_weather_api_result(place))
+async def process_weather(place: str) -> list:
+    output = await get_weather_api_result(place)
     if isinstance(output, dict) and 'error' in output:
         return [{'error': output['error']}, None, None]
     global_args = extract_global_args(output)
@@ -72,15 +72,15 @@ def process_weather(place: str) -> list:
 
  
 
-if os.name == 'nt':
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+#if os.name == 'nt':
+#    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 '''extracting new weather info to variables''' 
 
-def get_weather(city):
+async def get_weather(city):
     state.three_dates.clear()
     state.three_days.clear()
-    state.globalargs, state.weathertoday, state.forecast = process_weather(city.value)
+    (state.globalargs, state.weathertoday, state.forecast) = await process_weather(city.value)
     for key, value in state.forecast.items():
         state.three_dates.append(key)
         state.three_days.append(value)
